@@ -3,6 +3,8 @@ import { PORT } from "./config/.env.js"
 import authRouter from "./routes/auth.router.js";
 import userRouter from "./routes/user.router.js";
 import subscriptionRouter from "./routes/subscription.router.js";
+import connectToDatabase from "./database/mongodb.js";
+
 
 
 
@@ -19,8 +21,11 @@ app.get("/", (req, res) => {
 
 const serverPort = PORT
 
-app.listen(serverPort || 5400, () => {
+app.listen(serverPort || 5400, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 
+    //connect to database
+
+    await connectToDatabase();
 });
 export default app;
