@@ -42,8 +42,7 @@ export const validatePassword = {
         minSymbols: 1,
         minNumbers: 1
     }),
-    message:`Password must be atleast 8 characters long and contain
-            uppercase,lowercase, numbers & special characters.`
+    message: `Password must be atleast 8 characters long and contain uppercase,lowercase, numbers & special characters.`
 };
 
 

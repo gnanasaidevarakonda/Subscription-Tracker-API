@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "user password is required."],
         minLength: 8,
         select: false, //prevent password hash from leaking into queries.
-        validate: validators.validatePassword,
+
 
 
     }
