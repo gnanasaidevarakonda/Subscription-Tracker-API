@@ -6,5 +6,6 @@ export const {
     PORT, NODE_ENV,
     DB_URI,
     JWT_SECRET,
-    JWT_EXPIRES_IN
+    JWT_EXPIRES_IN,
+    ADMIN_kEY
 } = process.env
