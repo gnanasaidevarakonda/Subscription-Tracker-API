@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/user.model.js";
 import { validatePassword } from "../models/global.validator.js";
-import { JWT_EXPIRES_IN, JWT_SECRET } from "../config/.env.js";
+import { JWT_EXPIRES_IN, JWT_SECRET, ADMIN_kEY } from "../config/.env.js";
 
 
 
@@ -12,7 +12,13 @@ export const signUp = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const { name, password, email } = req.body;
+        const { name, password, email, adminSecret } = req.body;
+        let role = "user";
+
+        //If Secret Key Matches Make them admin..
+        if (adminSecret && adminSecret === "process.env.ADMIN_kEY") {
+            role = "admin";
+        }
 
         //check is user is alredy existed.
         const existingUser = await User.findOne({ email });
@@ -29,12 +35,14 @@ export const signUp = async (req, res, next) => {
             throw error;
         }
 
+
+
         //Hashing Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         //creating user.
-        const newUser = await User.create([{ name, email, password: hashedPassword }], { session });
+        const newUser = await User.create([{ name, email, password: hashedPassword, role }], { session });
 
         //creating jsonwebtoken for user.
         const token = jwt.sign({ userId: newUser[0]._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -109,4 +117,21 @@ export const signIn = async (req, res, next) => {
         next(error);
     }
 };
-export const signOut = async (req, res, next) => { };
+export const signOut = async (req, res, next) => {
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "user signed out succesfully"
+        });
+
+
+    } catch (error) {
+        next(error);
+    }
+};

@@ -26,9 +26,13 @@ const userSchema = new mongoose.Schema({
         minLength: 8,
         select: false, //prevent password hash from leaking into queries.
 
-
-
+    },
+    role: {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user"
     }
+
 }, { timestamps: true });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
