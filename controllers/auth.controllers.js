@@ -15,8 +15,9 @@ export const signUp = async (req, res, next) => {
         const { name, password, email, adminSecret } = req.body;
         let role = "user";
 
+
         //If Secret Key Matches Make them admin..
-        if (adminSecret && adminSecret === "process.env.ADMIN_kEY") {
+        if (adminSecret && adminSecret === ADMIN_kEY) {
             role = "admin";
         }
 

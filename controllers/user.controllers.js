@@ -120,7 +120,7 @@ export const deleteUser = async (req, res, next) => {
         await Subscription.deleteMany({ user: id });
         res.status(200).json({
             success: true,
-            message: "user and asscoiated subscriptions are deleetd",
+            message: "user and asscoiated subscriptions are deletd",
 
         });
     } catch (error) {
