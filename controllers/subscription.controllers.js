@@ -1,4 +1,5 @@
 import Subscription from "../models/subscription.model.js";
+import { addDays } from "date-fns";
 
 //1. GET api/v1/subscriptions(Admin Only: Fetch all subscriptions)
 
@@ -10,7 +11,7 @@ export const getAllSubscriptions = async (req, res, next) => {
             error.statusCode = 403;
             throw error;
         }
-        const subscriptions = await Subscription.find().populate("user", "name email");
+        const subscriptions = await Subscription.find().populate("user", "email");
         res.status(200).json({
             success: true,
             count: subscriptions.length,
@@ -58,7 +59,7 @@ export const getUserSubscriptionDetails = async (req, res, next) => {
         }
 
         //check if it's same user or not
-        if (req.user._Id.toString() !== id && req.user.role !== "admin") {
+        if (subscription.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
             const error = new Error("Unauthorized: You do not own the subscription.");
             error.statusCode = 403;
             throw error;
@@ -104,7 +105,7 @@ export const updateSubscription = async (req, res, next) => {
             error.statusCode = 404;
             throw error;
         }
-        if (!subscription.user.toString() !== req.user._id.toString && req.user.role !== "admin") {
+        if (subscription.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
             const error = new Error("Unauthorized: You can only change your own subscription");
             error.statusCode = 403;
             throw error;
@@ -144,7 +145,7 @@ export const deleteSubscription = async (req, res, next) => {
         }
 
         //check for authorization and admin previlages.
-        if (req.user._id.toString() !== id && req.user.role !== "admin") {
+        if (subscription.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
             const error = new Error("Unauthorized: you can only delete your own subscription.");
             error.statusCode = 403;
             throw error;
@@ -182,7 +183,7 @@ export const cancelSubscription = async (req, res, next) => {
         }
 
         subscription.status = "canceled";
-        await Subscription.save();
+        await subscription.save();
 
         res.status(200).json({
             success: true,
@@ -195,10 +196,23 @@ export const cancelSubscription = async (req, res, next) => {
 };
 
 //GET /api/v1/subscription/:id/upcoming-renewals (GET Next Upcoming renewals.)
-/*export const upcomingRenewals = async(req, res, next) =>{
+export const upcomingRenewals = async (req, res, next) => {
     try {
-        
+        const subscriptions = await Subscription.find({
+            user: req.user._id,
+            status: "active",
+            renewalDate: {
+                $gte: new Date(),
+                $lte: addDays(new Date(), 7)
+            }
+        }).sort({ renewalDate: 1 });
+
+        res.status(200).json({
+            sucess: true,
+            count: subscriptions.length,
+            data: subscriptions
+        });
     } catch (error) {
         next(error);
     }
-};*/
+};

@@ -27,7 +27,7 @@ const subscriptionSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ["Entertainment", "Education", "Productivity", "Health & Fitness", "Other"],
+        enum: ["Entertainment", "Education", "Productivity", "Health & Fitness", "food", "Other"],
         default: "Other",
         required: [true, "Please select a category for the subscription"]
     },
@@ -63,8 +63,8 @@ const subscriptionSchema = new mongoose.Schema({
 
 //Auto-calculate renewal date and auto-update status before saving schema.
 
-subscriptionSchema.pre("save", function (next) {
-    if (!this.renewalDate) {
+subscriptionSchema.pre("save", function () {
+    if (!this.renewalDate && this.startDate) {
         const renewalPeriods = {
             daily: 1,
             weekly: 7,
@@ -78,7 +78,7 @@ subscriptionSchema.pre("save", function (next) {
     if (this.renewalDate < new Date()) {
         this.status = "expired";
     }
-    next();
+
 });
 
 const Subscription = mongoose.models.Subscription || mongoose.model("Subscription", subscriptionSchema);
