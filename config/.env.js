@@ -7,5 +7,7 @@ export const {
     DB_URI,
     JWT_SECRET,
     JWT_EXPIRES_IN,
-    ADMIN_kEY
-} = process.env
+    ADMIN_kEY,
+    QSTASH_TOKEN,QSTASH_URL,
+    EMAIL_ACCOUNT,EMAIL_PASSWORD,SERVER_URL
+} = process.env;
