@@ -10,8 +10,9 @@ subscriptionRouter.use(authorize);
 
 subscriptionRouter.get("/", subscriptions.getAllSubscriptions);
 
-subscriptionRouter.get("/:id", subscriptions.getUserSubscriptionDetails);
 
+
+subscriptionRouter.get("/upcoming-renewals", subscriptions.upcomingRenewals);
 
 subscriptionRouter.get("/user/:id", subscriptions.getUserSubscriptions);
 
@@ -23,8 +24,8 @@ subscriptionRouter.put("/:id", subscriptions.updateSubscription);
 subscriptionRouter.delete("/:id", subscriptions.deleteSubscription);
 
 subscriptionRouter.put("/:id/cancel", subscriptions.cancelSubscription);
+subscriptionRouter.get("/:id", subscriptions.getUserSubscriptionDetails);
 
-subscriptionRouter.get("/upcoming-renewals", subscriptions.upcomingRenewals);
 
 
 

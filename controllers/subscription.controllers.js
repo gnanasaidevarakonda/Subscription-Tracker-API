@@ -1,5 +1,8 @@
 import Subscription from "../models/subscription.model.js";
 import { addDays } from "date-fns";
+//import { workflowClient } from "../config/upstash.js";
+//import { SERVER_URL } from "../config/.env.js";
+import { checkSubscriptionRemainder } from "../utils/remainder.service.js";
 
 //1. GET api/v1/subscriptions(Admin Only: Fetch all subscriptions)
 
@@ -79,14 +82,26 @@ export const getUserSubscriptionDetails = async (req, res, next) => {
 export const createSubscription = async (req, res, next) => {
     try {
         //creates a subcription for user.
-        const subcription = await Subscription.create({
+        const subscription = await Subscription.create({
             ...req.body,
             user: req.user.id
         });
+
+        // Triger the automated remainder workflow!
+        /* try {
+             await workflowClient.trigger({
+                 url: `${SERVER_URL}/api/v1/workflows/subscription/remainder`,
+                 body: { subscriptionId: subscription.id },
+             });
+         } catch (workflowError) {
+             console.error("Workflow trigger failed:", workflowError);
+         }*/
+        await checkSubscriptionRemainder(subscription);
+
         res.status(201).json({
             success: true,
             message: "subscription created successfully",
-            data: subcription
+            data: subscription
         });
     } catch (error) {
         next(error);
