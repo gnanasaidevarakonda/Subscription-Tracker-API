@@ -52,11 +52,19 @@ const subscriptionSchema = new mongoose.Schema({
         type: Date,
         validate: validator.validateRenewalDate
     },
+    reminderSchema: {
+        type: [Number],
+        default: [],
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
         index: true
+    },
+    reminderSchema: {
+        type: [Number],
+        default: [],
     }
 
 }, { timestamps: true });
