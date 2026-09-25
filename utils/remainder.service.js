@@ -26,6 +26,11 @@ export const checkSubscriptionRemainder = async (subscription) => {
 
         //If today matches 7,5,2 or 1 day before renewals
         if (REMAINDERS.includes(daysUntilRenewal)) {
+
+            //check 1: If alert alredy sent for this remainder checkpoint, SKIP.
+            if (populatedSub.remaindersSent && populatedSub.remaindersSent.includes(daysUntilRenewal)) {
+                return;
+            }
             console.log(`⏰ Sending ${daysUntilRenewal}-day reminder email to ${populatedSub.user.email} for ${populatedSub.name}...`);
 
             await sendEmailRemainder({
@@ -34,7 +39,12 @@ export const checkSubscriptionRemainder = async (subscription) => {
                 subscription: populatedSub,
             });
 
-            console.log(`✅ Email sent successfully to ${populatedSub.user.email}!`);
+            //CHECK 2: Record in MongoDB so it NEVER sends it again for this checkpoint
+            await Subscription.findByIdAndUpdate(populatedSub._id, {
+                $addToSet: { remaindersSent: daysUntilRenewal }
+            });
+
+            console.log(`✅ Recorded ${daysUntilRenewal}-day reminder as sent!`);
         }
     } catch (error) {
         console.error("Error checking subscription remainder:", error);
