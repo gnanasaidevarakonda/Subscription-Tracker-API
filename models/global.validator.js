@@ -13,13 +13,16 @@ export const validateFullName = {
         const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
         /* condition for return just a name uncomment 
         below line and comment everthing else in validator object.*/
-        // return nameRegex.test(value);
-        if (!nameRegex.test(value)) return false;
+        return nameRegex.test(value.trim());
+
+
+        /*if (!nameRegex.test(value)) return false;
 
         // condition to check for both first and last name
 
         const words = value.trim().split(/\s+/);
         return words.length >= 2;
+        */
 
     },
     message: "Please provide both First and Last Name (letters only)",
