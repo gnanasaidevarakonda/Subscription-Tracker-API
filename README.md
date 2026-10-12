@@ -32,7 +32,7 @@ A production-grade, containerized RESTful API engineered with **Node.js (ES Modu
 
 ```mermaid
 flowchart TD
-    Client["Client / Postman / Frontend"] -->|HTTP Requests| App["Express API Server (:5400)"]
+    Client["Client / Postman / Frontend"] -->|HTTP Requests| App["Express API Server - Port 5400"]
     
     subgraph SecurityLayer["Security & Middleware Pipeline"]
         Helmet["Helmet (HTTP Security Headers)"]
@@ -46,8 +46,8 @@ flowchart TD
     
     subgraph Storage["Persistence & Background Workers"]
         Controllers --> Mongoose["Mongoose ODM"]
-        Mongoose --> MongoDB[("MongoDB Database (:27017)")]
-        Cron["Node-Cron Reminder Engine"] -->|Hourly / Daily Sweep| MongoDB
+        Mongoose --> MongoDB[("MongoDB Database - Port 27017")]
+        Cron["Node-Cron Reminder Engine"] -->|Periodic Sweep| MongoDB
         Cron --> Nodemailer["Nodemailer Email Service"]
     end
 
