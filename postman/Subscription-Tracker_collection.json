@@ -1,0 +1,492 @@
+{
+    "info": {
+        "name": "Subscription Tracker API (Production Suite)",
+        "_postman_id": "subscription-tracker-api-v1",
+        "description": "# Subscription Tracker REST API\n\nProduction-ready test collection for the **Subscription Tracker API** with automated dynamic token chaining, response assertions, and full CRUD workflows.\n\n### Key Highlights:\n- **Native Collection-Level Auth**: No manual authorization headers needed; tokens are handled by Postman's auth engine.\n- **Automated Token Extraction**: Sign Up and Sign In automatically populate `{{authToken}}` and `{{userId}}`.\n- **One-Click Regression Runner**: You can run the entire collection sequentially via the Collection Runner or Newman CLI.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{authToken}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "01 - Authentication",
+            "description": "Endpoints for user registration, session management, and JWT token issuance.",
+            "item": [
+                {
+                    "name": "Sign Up",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "pm.test('Response contains valid JWT token and user profile', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.success).to.be.true;",
+                                    "    pm.expect(res.data.token).to.be.a('string');",
+                                    "    pm.expect(res.data.user._id).to.be.a('string');",
+                                    "    pm.environment.set('authToken', res.data.token);",
+                                    "    pm.environment.set('userId', res.data.user._id);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Senior Developer\",\n  \"email\": \"engineer_{{$timestamp}}@example.com\",\n  \"password\": \"SecurePass@2026\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/sign-up",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sign-up"
+                            ]
+                        },
+                        "description": "### Create New User Account\nRegisters a new user and generates a signed JWT access token.\n\n#### Body Parameters:\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `name` | String | Yes | User display name (2-50 chars) |\n| `email` | String | Yes | Unique valid email address |\n| `password` | String | Yes | Password matching security criteria |\n| `adminSecret` | String | No | Pass secret key to grant admin privileges |\n\n#### Success Response (201 Created):\n```json\n{\n  \"success\": true,\n  \"message\": \"user created succesfully\",\n  \"data\": {\n    \"token\": \"<jwt_token>\",\n    \"user\": { \"_id\": \"...\", \"name\": \"...\", \"email\": \"...\", \"role\": \"user\" }\n  }\n}\n```"
+                    }
+                },
+                {
+                    "name": "Sign In",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Auth token captured and updated', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.success).to.be.true;",
+                                    "    pm.expect(res.data.token).to.be.a('string');",
+                                    "    pm.environment.set('authToken', res.data.token);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"engineer_test@example.com\",\n  \"password\": \"SecurePass@2026\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/sign-in",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sign-in"
+                            ]
+                        },
+                        "description": "### User Authentication\nValidates credentials and issues an active JWT session token."
+                    }
+                },
+                {
+                    "name": "Sign Out",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/sign-out",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sign-out"
+                            ]
+                        },
+                        "description": "### Terminate User Session\nClears cookies and closes active session."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "02 - Users",
+            "description": "User profile management and administrative user queries.",
+            "item": [
+                {
+                    "name": "Get User Profile By ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('User ID matches session', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data._id).to.eql(pm.environment.get('userId'));",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{userId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{userId}}"
+                            ]
+                        },
+                        "description": "### Retrieve User Details\nFetches profile data for the specified user ID.\n\n**Authentication**: Requires Bearer Token."
+                    }
+                },
+                {
+                    "name": "Get All Users",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Returns an array of users', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data).to.be.an('array');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "### List All Users\nReturns all registered platform users."
+                    }
+                },
+                {
+                    "name": "Update User Profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Lead Engineer Updated\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{userId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{userId}}"
+                            ]
+                        },
+                        "description": "### Update User Profile\nModifies editable fields on a user record."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "03 - Subscriptions",
+            "description": "Complete lifecycle management for recurring subscriptions.",
+            "item": [
+                {
+                    "name": "Create Subscription",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 201 Created', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "pm.test('Captures created subscription ID', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data._id).to.be.a('string');",
+                                    "    pm.environment.set('subscriptionId', res.data._id);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"GitHub Copilot Enterprise\",\n  \"price\": 1999,\n  \"currency\": \"INR\",\n  \"frequency\": \"monthly\",\n  \"category\": \"Productivity\",\n  \"paymentMethod\": \"Credit Card\",\n  \"startDate\": \"2026-10-12T00:00:00.000Z\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions"
+                            ]
+                        },
+                        "description": "### Create New Subscription\nInitializes a recurring billing plan with renewal date calculations.\n\n#### Allowed Enum Values:\n- **`currency`**: `\"USD\"`, `\"GBP\"`, `\"INR\"`, `\"EUR\"`\n- **`frequency`**: `\"daily\"`, `\"weekly\"`, `\"monthly\"`, `\"yearly\"`\n- **`category`**: `\"Entertainment\"`, `\"Education\"`, `\"Productivity\"`, `\"Health & Fitness\"`, `\"food\"`, `\"Other\"`\n- **`paymentMethod`**: `\"Credit Card\"`, `\"Debit Card\"`, `\"PayPal\"`, `\"Bank Transfer\"`, `\"UPI\"`, `\"Other\"`"
+                    }
+                },
+                {
+                    "name": "Get All Subscriptions",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Subscription records returned as array', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data).to.be.an('array');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions"
+                            ]
+                        },
+                        "description": "### Fetch All Platform Subscriptions\nLists all active, canceled, or expired subscriptions across the platform."
+                    }
+                },
+                {
+                    "name": "Get Subscription Details By ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Subscription ID matches environment variable', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data._id).to.eql(pm.environment.get('subscriptionId'));",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions/{{subscriptionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions",
+                                "{{subscriptionId}}"
+                            ]
+                        },
+                        "description": "### Fetch Single Subscription\nRetrieves full subscription details including renewal date and reminder schedules."
+                    }
+                },
+                {
+                    "name": "Get Upcoming Renewals",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions/upcoming-renewals",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions",
+                                "upcoming-renewals"
+                            ]
+                        },
+                        "description": "### List Upcoming Renewals\nReturns subscriptions due for renewal within the scheduled reminder threshold."
+                    }
+                },
+                {
+                    "name": "Cancel Subscription",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Status is updated to canceled', function () {",
+                                    "    var res = pm.response.json();",
+                                    "    pm.expect(res.data.status).to.eql('canceled');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions/{{subscriptionId}}/cancel",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions",
+                                "{{subscriptionId}}",
+                                "cancel"
+                            ]
+                        },
+                        "description": "### Cancel Active Subscription\nTransitions subscription state to `canceled` without deleting historic billing data."
+                    }
+                },
+                {
+                    "name": "Delete Subscription (Cleanup)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200 OK', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/subscriptions/{{subscriptionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "subscriptions",
+                                "{{subscriptionId}}"
+                            ]
+                        },
+                        "description": "### Delete Subscription Record\nPermanently removes a subscription from the database."
+                    }
+                }
+            ]
+        }
+    ]
+}

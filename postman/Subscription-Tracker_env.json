@@ -1,0 +1,31 @@
+{
+    "id": "subscription-tracker-local-env",
+    "name": "Subscription Tracker (Local)",
+    "values": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5400/api/v1",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "authToken",
+            "value": "",
+            "type": "secret",
+            "enabled": true
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "subscriptionId",
+            "value": "",
+            "type": "default",
+            "enabled": true
+        }
+    ],
+    "_postman_variable_scope": "environment"
+}
