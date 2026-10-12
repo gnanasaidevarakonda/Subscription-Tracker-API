@@ -91,7 +91,7 @@ export const updateUser = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "User Name is changed succesfully.",
-            data: updateUser,
+            data: user,
         });
 
     } catch (error) {
