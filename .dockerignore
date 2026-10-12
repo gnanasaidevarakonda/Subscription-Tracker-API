@@ -1,0 +1,19 @@
+# Dependencies & Build artifacts
+node_modules
+npm-debug.log*
+
+# Git repository data
+.git
+.gitignore
+
+# Environment secrets (never bake secrets into an image)
+.env
+.env*.local
+
+# Postman local files
+.postman
+postman
+
+# Documentation & Misc
+README.md
+HISTORY.md
