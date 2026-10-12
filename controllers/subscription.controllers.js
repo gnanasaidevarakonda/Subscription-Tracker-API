@@ -223,7 +223,7 @@ export const upcomingRenewals = async (req, res, next) => {
         }).sort({ renewalDate: 1 });
 
         res.status(200).json({
-            sucess: true,
+            success: true,
             count: subscriptions.length,
             data: subscriptions
         });

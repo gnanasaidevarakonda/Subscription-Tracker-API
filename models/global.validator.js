@@ -25,7 +25,7 @@ export const validateFullName = {
         */
 
     },
-    message: "Please provide both First and Last Name (letters only)",
+    message: "Please provide a valid Name (letters, spaces & hypens only)",
 };
 
 //E-mail built-in validator.

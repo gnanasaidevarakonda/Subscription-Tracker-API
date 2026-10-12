@@ -52,7 +52,7 @@ const subscriptionSchema = new mongoose.Schema({
         type: Date,
         validate: validator.validateRenewalDate
     },
-    reminderSchema: {
+    remindersSchema: {
         type: [Number],
         default: [],
     },
@@ -62,10 +62,7 @@ const subscriptionSchema = new mongoose.Schema({
         required: true,
         index: true
     },
-    reminderSchema: {
-        type: [Number],
-        default: [],
-    }
+
 
 }, { timestamps: true });
 
