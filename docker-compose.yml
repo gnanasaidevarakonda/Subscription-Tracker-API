@@ -15,7 +15,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "${PORT:-5400}:5400"
+      - "${PORT:-5400}:${PORT:-5400}"
     env_file:
       - .env
     depends_on:
