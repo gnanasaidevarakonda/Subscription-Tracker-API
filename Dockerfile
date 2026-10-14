@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5400
 
 # 7. Start command
-CMD ["npm", "./app.js"]
+CMD ["node", "./app.js"]
