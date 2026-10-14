@@ -146,7 +146,7 @@ If you prefer to run the application directly on your host machine:
 npm install
 
 # 2. Configure environment
-cp .env.example .env.development.local
+cp .env.example .env
 
 # 3. Start development server
 npm run dev

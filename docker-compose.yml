@@ -2,10 +2,9 @@ services:
   # MongoDB Database Service
   mongo:
     image: mongo:7.0
-    container_name: subscription-tracker-mongo
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - mongo-data:/data/db
     networks:
@@ -14,17 +13,11 @@ services:
   # Subscription Tracker Express API Service
   api:
     build: .
-    container_name: subscription-tracker-api
     restart: unless-stopped
     ports:
-      - "5400:5400"
-    environment:
-      - PORT=5400
-      - NODE_ENV=development
-      - DB_URI=mongodb://mongo:27017/subscription-tracker
-      - JWT_SECRET=subscription_tracker_dev_jwt_secret_2026
-      - JWT_EXPIRES_IN=7d
-      - ADMIN_kEY=dev_admin_key_2026
+      - "${PORT:-5400}:5400"
+    env_file:
+      - .env
     depends_on:
       - mongo
     networks:
