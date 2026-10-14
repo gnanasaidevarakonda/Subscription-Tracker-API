@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { DB_URI, NODE_ENV } from "../config/.env.js";
 
 if (!DB_URI) {
-    throw new Error("please define the MongoDB_URI in environmental variables .env.<development/production>.local files");
+    throw new Error("please define the MongoDB_URI in your .env file or system environment variables.");
 }
 
 const connectToDatabase = async () => {
